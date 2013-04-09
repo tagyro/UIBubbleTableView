@@ -35,15 +35,16 @@
     
     self.backgroundColor = [UIColor clearColor];
     self.separatorStyle = UITableViewCellSeparatorStyleNone;
-    assert(self.style == UITableViewStylePlain);
+    //assert(self.style == UITableViewStylePlain);
     
     self.delegate = self;
     self.dataSource = self;
     
     // UIBubbleTableView default properties
     
-    self.snapInterval = 120;
+    self.snapInterval = 3600;
     self.typingBubble = NSBubbleTypingTypeNobody;
+    
 }
 
 - (id)init
@@ -171,20 +172,25 @@
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    float val = 0;
     // Now typing
 	if (indexPath.section >= [self.bubbleSection count])
     {
-        return MAX([UIBubbleTypingTableViewCell height], self.showAvatars ? 52 : 0);
+        val = MAX([UIBubbleTypingTableViewCell height], 58);
+        return val;
     }
     
     // Header
     if (indexPath.row == 0)
     {
-        return [UIBubbleHeaderTableViewCell height];
+        val = [UIBubbleHeaderTableViewCell height];
+        return val;
     }
     
     NSBubbleData *data = [[self.bubbleSection objectAtIndex:indexPath.section] objectAtIndex:indexPath.row - 1];
-    return MAX(data.insets.top + data.view.frame.size.height + data.insets.bottom, self.showAvatars ? 52 : 0);
+    val = MAX(data.insets.top + data.height + data.insets.bottom, 58);
+    //
+    return val;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -198,7 +204,11 @@
         if (cell == nil) cell = [[UIBubbleTypingTableViewCell alloc] init];
 
         cell.type = self.typingBubble;
-        cell.showAvatar = self.showAvatars;
+        if (cell.type==BubbleTypeMine) {
+            cell.showAvatar = NO;
+        } else {
+            cell.showAvatar = YES;
+        }
         
         return cell;
     }
@@ -217,7 +227,7 @@
         return cell;
     }
     
-    // Standard bubble    
+    // Standard bubble
     static NSString *cellId = @"tblBubbleCell";
     UIBubbleTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
     NSBubbleData *data = [[self.bubbleSection objectAtIndex:indexPath.section] objectAtIndex:indexPath.row - 1];
@@ -227,7 +237,92 @@
     cell.data = data;
     cell.showAvatar = self.showAvatars;
     
+    cell.shouldIndentWhileEditing = NO;
+    
     return cell;
+}
+
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row==0) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+-(BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NO;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView indentationLevelForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 0;
+}
+
+-(void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    if (editing) {
+        //
+    }
+    //NSLog(@"table editing: %i animated: %i",editing, animated);
+    [super setEditing:editing animated:animated];
+}
+
+-(void)tableView:(UITableView *)tableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+    //NSLog(@"begin editing row at %i",indexPath.row);
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle==UITableViewCellEditingStyleDelete) {
+        UIBubbleTableViewCell *cell = (UIBubbleTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
+        NSString *mid;
+        if ([cell.data.mid isKindOfClass:[NSString class]]) {
+            mid = cell.data.mid;
+        } else {
+            NSNumber *num = (NSNumber*)cell.data.mid;
+            mid = [NSString stringWithFormat:@"%i",num.integerValue];
+        }
+        //
+        if (mid) {
+            if ([self.del respondsToSelector:@selector(deleteMessageWithId:)]) {
+                ipath = indexPath;
+                [self.del deleteMessageWithId:mid];
+//                [[self.bubbleSection objectAtIndex:indexPath.section] objectAtIndex:indexPath.row - 1];
+                //[[self.bubbleSection objectAtIndex:indexPath.section] removeObjectAtIndex:indexPath.row-1];
+                //[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
+            } else {
+                NSLog(@"no del (%@)",self.del);
+            }
+        }
+    }
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Detemine if it's in editing mode
+    if (self.editing)
+    {
+        return UITableViewCellEditingStyleDelete;
+    }
+    
+    return UITableViewCellEditingStyleNone;
+}
+
+#pragma mark Public methods
+
+-(void)continueDeletion {
+    if (ipath) {
+//        NSLog(@"will delete %@",ipath);
+//        [[self.bubbleSection objectAtIndex:ipath.section] removeObjectAtIndex:ipath.row-1];
+//        [self deleteRowsAtIndexPaths:[NSArray arrayWithObject:ipath] withRowAnimation:UITableViewRowAnimationTop];
+//        ipath = nil;
+        [self setEditing:YES animated:YES];
+    }
+}
+
+-(void)scrollToBottom:(BOOL)animated {
+    int lastSection = [self numberOfSections]-1;
+    int lastRow = [self numberOfRowsInSection:lastSection]-1;
+    //
+    [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] atScrollPosition:UITableViewScrollPositionTop animated:animated];
 }
 
 @end

@@ -53,28 +53,32 @@ const UIEdgeInsets textInsetsSomeone = {5, 15, 11, 10};
 
 - (id)initWithText:(NSString *)text date:(NSDate *)date type:(NSBubbleType)type
 {
-    UIFont *font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
-    CGSize size = [(text ? text : @"") sizeWithFont:font constrainedToSize:CGSizeMake(220, 9999) lineBreakMode:NSLineBreakByWordWrapping];
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+//    UIFont *font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
+    CGSize size = [text sizeWithFont:regular16 constrainedToSize:CGSizeMake(220, 9999) lineBreakMode:NSLineBreakByWordWrapping];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, size.width, size.height)];
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.text = (text ? text : @"");
-    label.font = font;
+    label.font = regular16;
+    label.textColor = textNormalColor;
     label.backgroundColor = [UIColor clearColor];
-    
+    label.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+    label.textAlignment = NSTextAlignmentLeft;
+    self.height = size.height+10;
 #if !__has_feature(objc_arc)
     [label autorelease];
 #endif
-    
+    _text = text;
     UIEdgeInsets insets = (type == BubbleTypeMine ? textInsetsMine : textInsetsSomeone);
-    return [self initWithView:label date:date type:type insets:insets];
+    NSBubbleData *ret = [self initWithView:nil date:date type:type insets:insets];
+    ret.text = text;
+    return ret;
 }
 
 #pragma mark - Image bubble
 
-const UIEdgeInsets imageInsetsMine = {11, 13, 16, 22};
-const UIEdgeInsets imageInsetsSomeone = {11, 18, 16, 14};
+const UIEdgeInsets imageInsetsMine = {2, 13, 16, 22};
+const UIEdgeInsets imageInsetsSomeone = {2, 18, 16, 14};
 
 + (id)dataWithImage:(UIImage *)image date:(NSDate *)date type:(NSBubbleType)type
 {

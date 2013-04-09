@@ -13,6 +13,12 @@
 #import "UIBubbleTableViewDataSource.h"
 #import "UIBubbleTableViewCell.h"
 
+@protocol BubbleDelegate <NSObject>
+
+-(void)deleteMessageWithId:(NSString*)mid;
+
+@end
+
 typedef enum _NSBubbleTypingType
 {
     NSBubbleTypingTypeNobody = 0,
@@ -20,11 +26,18 @@ typedef enum _NSBubbleTypingType
     NSBubbleTypingTypeSomebody = 2
 } NSBubbleTypingType;
 
-@interface UIBubbleTableView : UITableView <UITableViewDelegate, UITableViewDataSource>
+@interface UIBubbleTableView : UITableView <UITableViewDelegate, UITableViewDataSource> {
+    NSIndexPath *ipath;
+}
 
 @property (nonatomic, assign) IBOutlet id<UIBubbleTableViewDataSource> bubbleDataSource;
 @property (nonatomic) NSTimeInterval snapInterval;
 @property (nonatomic) NSBubbleTypingType typingBubble;
 @property (nonatomic) BOOL showAvatars;
+
+@property (weak, nonatomic) id <BubbleDelegate> del;
+
+-(void)scrollToBottom:(BOOL)animated;
+-(void)continueDeletion;
 
 @end
