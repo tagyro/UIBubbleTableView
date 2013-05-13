@@ -54,12 +54,12 @@ const UIEdgeInsets textInsetsSomeone = {5, 15, 11, 10};
 - (id)initWithText:(NSString *)text date:(NSDate *)date type:(NSBubbleType)type
 {
 //    UIFont *font = [UIFont systemFontOfSize:[UIFont systemFontSize]];
-    CGSize size = [text sizeWithFont:regular16 constrainedToSize:CGSizeMake(220, 9999) lineBreakMode:NSLineBreakByWordWrapping];
+    CGSize size = [text sizeWithFont:medium17 constrainedToSize:CGSizeMake(220, 9999) lineBreakMode:NSLineBreakByWordWrapping];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, size.width, size.height)];
     label.numberOfLines = 0;
     label.lineBreakMode = NSLineBreakByWordWrapping;
     label.text = (text ? text : @"");
-    label.font = regular16;
+    label.font = medium17;
     label.textColor = textNormalColor;
     label.backgroundColor = [UIColor clearColor];
     label.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;

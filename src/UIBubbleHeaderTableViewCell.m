@@ -31,7 +31,7 @@
     {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, [UIBubbleHeaderTableViewCell height])];
-        self.label.font = regular14;
+        self.label.font = medium14;
         self.label.textAlignment = NSTextAlignmentCenter;
         self.label.shadowOffset = CGSizeMake(0, 1);
         self.label.shadowColor = textNormalColor;
