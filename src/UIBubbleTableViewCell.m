@@ -139,7 +139,7 @@
     self.textView.lineBreakMode = NSLineBreakByWordWrapping;
     self.textView.text = @"";
     self.textView.text = self.data.text;
-    self.textView.font = medium17;
+    self.textView.font = regular15;
     self.textView.textColor = textNormalColor;
     self.textView.backgroundColor = [UIColor clearColor];
     self.textView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
