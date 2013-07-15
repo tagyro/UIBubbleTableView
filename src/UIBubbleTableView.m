@@ -319,10 +319,18 @@
 }
 
 -(void)scrollToBottom:(BOOL)animated {
-    int lastSection = [self numberOfSections]-1;
-    int lastRow = [self numberOfRowsInSection:lastSection]-1;
+    int lastSection = 0;
+    if ([self numberOfSections]>0) {
+        lastSection = [self numberOfSections]-1;
+    }
+    int lastRow = 0;
+    if ([self numberOfRowsInSection:lastSection]>0) {
+        lastRow = [self numberOfRowsInSection:lastSection]-1;
+    }
     //
-    [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] atScrollPosition:UITableViewScrollPositionTop animated:animated];
+    if (lastRow>0) {
+        [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection] atScrollPosition:UITableViewScrollPositionTop animated:animated];
+    }
 }
 
 @end
